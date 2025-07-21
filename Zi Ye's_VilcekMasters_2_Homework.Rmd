@@ -1,0 +1,221 @@
+---
+title: "Masters Homework 2"
+author: "Zi Ye"
+date: "7/21/2025"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+>- Find summary information about the total blood mercury levels in our NYC HANES data (hint: names(nyc) will call the names of each column). What is the max value, what is the minimum value.  
+
+```{r}
+names(nyc)
+
+max(nyc$MERCURYTOTALBLOOD, na.rm = TRUE)
+min(nyc$MERCURYTOTALBLOOD, na.rm = TRUE)
+summary(nyc$MERCURYTOTALBLOOD)
+
+```
+
+>- Bonus/Challenge: What is the Standard Deviation and skewness of the blood mercury?
+
+```{r}
+
+if (!require(e1071)) install.packages("e1071")
+library(e1071)
+
+sd(nyc$MERCURYTOTALBLOOD, na.rm = TRUE)
+skewness(nyc$MERCURYTOTALBLOOD, na.rm = TRUE)
+```
+
+
+
+>- Install a package and load, such as "ggplot2" or "dplyr"
+
+```{r}
+install.packages("ggplot2")
+library(ggplot2)
+```
+
+
+
+
+
+>- What two commands are needed to install and use a package in R?
+
+```{r}
+
+# install the package:
+install.packages("dplyr")
+# load it each time you use it:
+library(dplyr)
+```
+
+
+
+
+>- When you read in a .csv file into R, what class is the object that you read in (like nyc)?
+
+ .csv file read into R using read.csv() results in a data.frame object.
+
+>- What command can you use to determine what type of data is in a column?
+
+```{r}
+# Use class() to determine the type of data 
+class(nyc$DX_DBTS)
+```
+
+
+>- Provide a command to find the type of data in the DX_DBTS column of nyc. 
+
+```{r}
+class(nyc[["DX_DBTS"]])
+```
+
+
+>- Provide the same command the type of data but use the other way of indexing from what you did above. 
+
+```{r}
+class(nyc[, "DX_DBTS"])
+
+```
+
+
+
+>- What would happen if we had chosen the first 4 columns of NYC HANES and made a matrix? What would the class of the cells in this matrix be? Why?
+
+```{r}
+nyc_subset <- nyc[, 1:4]
+matrix_form <- as.matrix(nyc_subset)
+class(matrix_form)  # matrix
+
+```
+
+
+>- If we make a vector,vec<- c(3,9,4,7,8,9), and multiply it by WannaMatrix, what is the value in the third row, third column? 
+
+```{r}
+vec <- c(3, 9, 4, 7, 8, 9)
+WannaMatrix <- nyc[5:10, 6:9]
+WannaMatrix <- as.matrix(WannaMatrix,nrow = 6, ncol = 4)
+product_matrix <- vec * WannaMatrix
+product_matrix[3, 3]
+
+
+```
+
+
+
+>- What happens if instead we made a vector vec2 <- c(3,9,4,7,8) and multiply it by WannaMatrix, what is the third row, third column value? What is going on? 
+
+```{r}
+vec2 <- c(3, 9, 4, 7, 8)
+product_matrix2 <- vec2 * WannaMatrix
+product_matrix2[3, 3]
+```
+
+
+>- Look up the arguments for read.csv
+
+```{r}
+args(read.csv)
+```
+
+
+>- Use apply() to find the median value of CADMIUM, LEAD CHOLESTEROLTOTAL, GLUCOSESI, CREATININESI, and CREATININE
+
+```{r}
+apply(nyc[, c("CADMIUM", "LEAD", "CHOLESTEROLTOTAL", "GLUCOSESI", "CREATININESI", "CREATININE")],
+      2, median, na.rm = TRUE)
+
+```
+
+
+>- Do the same using sapply()
+
+```{r}
+sapply(nyc[, c("CADMIUM", "LEAD", "CHOLESTEROLTOTAL", "GLUCOSESI", "CREATININESI", "CREATININE")],
+       median, na.rm = TRUE)
+
+
+```
+
+>- Use a for loop to find the median value of columns 16:19
+
+```{r}
+for (i in 16:19) {
+  print(median(nyc[, i], na.rm = TRUE))
+}
+
+```
+
+
+>- Make a for loop to find the standard deviation (hint sd() ) of CHOLESTEROLTOTAL, GLUCOSESI, CREATININESI, AND CREATININE
+
+```{r}
+cols <- c("CHOLESTEROLTOTAL", "GLUCOSESI", "CREATININESI", "CREATININE")
+for (col in cols) {
+  print(sd(nyc[[col]], na.rm = TRUE))
+}
+
+```
+
+
+>- Bonus/Challenge Create a vector in which to put the standard deviations 
+
+```{r}
+sd_vector <- numeric(length(cols))
+for (i in seq_along(cols)) {
+  sd_vector[i] <- sd(nyc[[cols[i]]], na.rm = TRUE)
+}
+sd_vector
+
+```
+
+
+>- Use ifelse to create a new variable of high and normal A1C dichotomizing with 7 as a threshold for high levels
+
+```{r}
+nyc$A1C_level <- ifelse(nyc$A1C >= 7, "High", "Normal")
+table(nyc$A1C_level)
+
+```
+###################################################################################OPTIONAL##############################################################################################
+
+>- Subset to only have females (gender == "female")
+
+```{r}
+nyc_female <- subset(nyc, GENDER == "female")
+head(nyc_female)
+
+```
+
+
+>- Create a subset of males and find the median total cholesterol level
+
+```{r}
+nyc_male <- subset(nyc, GENDER == "male")
+median(nyc_male$CHOLESTEROLTOTAL, na.rm = TRUE)
+
+
+```
+
+
+>- Try to create a summary of the mean A1C using two factors, GENDER and DX_DBTS
+
+```{r}
+aggregate(A1C ~ GENDER + DX_DBTS, data = nyc, FUN = mean, na.rm = TRUE)
+
+```
+
+Find the class of the first three columns of data. What are they?
+
+```{r}
+sapply(nyc[, 1:3], class)
+
+```
+
